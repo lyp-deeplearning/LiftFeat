@@ -22,10 +22,10 @@ This repository contains the official implementation of the paper: *[LiftFeat: 3
 ## Installation
 If you use conda as virtual environment,you can create a new env with:
 ```bash
-git clone xxx
-cd xxx
-conda create -n liftfeat python=3.8
-conda activate liftfeat
+git clone https://github.com/lyp-deeplearning/LiftFeat.git
+cd LiftFeat
+conda create -n LiftFeat python=3.8
+conda activate LiftFeat
 
 pip install -r requirements.txt
 ```
@@ -81,8 +81,27 @@ python evaluation/aachen_day_night_evaluation.py
 
 ## Citation
 If you find this code useful for your research, please cite the paper:
-
-
+```bibtex
+@misc{liu2025liftfeat3dgeometryawarelocal,
+      title={LiftFeat: 3D Geometry-Aware Local Feature Matching}, 
+      author={Yepeng Liu and Wenpeng Lai and Zhou Zhao and Yuxuan Xiong and Jinchi Zhu and Jun Cheng and Yongchao Xu},
+      year={2025},
+      eprint={2505.03422},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2505.03422}, 
+}
+```
 
 ## License
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
+
+## Acknowledgements
+We would like to thank the authors of the following open-source repositories for their valuable contributions, which have inspired or supported this work:
+
+- [verlab/accelerated_features](https://github.com/verlab/accelerated_features)
+- [zju3dv/LoFTR](https://github.com/zju3dv/LoFTR)
+- [rpautrat/SuperPoint](https://github.com/rpautrat/SuperPoint)
+
+We deeply appreciate the efforts of the research community in releasing high-quality codebases.

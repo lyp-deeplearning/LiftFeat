@@ -44,7 +44,7 @@ class NonMaxSuppression(torch.nn.Module):
         return pos
 
 def load_model(model, weight_path):
-    pretrained_weights = torch.load(weight_path)
+    pretrained_weights = torch.load(weight_path, map_location="cpu")
 
     model_keys = set(model.state_dict().keys())
     pretrained_keys = set(pretrained_weights.keys())
@@ -52,22 +52,11 @@ def load_model(model, weight_path):
     missing_keys = model_keys - pretrained_keys
     unexpected_keys = pretrained_keys - model_keys
 
-    # if missing_keys:
-    #     print("Missing keys in pretrained weights:", missing_keys)
-    # else:
-    #     print("No missing keys in pretrained weights.")
-
-    # if unexpected_keys:
-    #     print("Unexpected keys in pretrained weights:", unexpected_keys)
-    # else:
-    #     print("No unexpected keys in pretrained weights.")
-
     if not missing_keys and not unexpected_keys:
         model.load_state_dict(pretrained_weights)
         print("load weight successfully.")
     else:
         model.load_state_dict(pretrained_weights, strict=False)
-        # print("There were issues with the keys.")
     return model
 
 
@@ -75,7 +64,7 @@ import torch.nn as nn
 class LiftFeat(nn.Module):
     def __init__(self,weight=MODEL_PATH,top_k=4096,detect_threshold=0.1):
         super().__init__()
-        self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device=device
         self.net=LiftFeatSPModel(featureboost_config).to(self.device).eval()
         self.top_k=top_k
         self.sampler=InterpolateSparse2d('bicubic')

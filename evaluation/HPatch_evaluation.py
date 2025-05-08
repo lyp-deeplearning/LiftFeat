@@ -165,9 +165,8 @@ def benchmark_features(match_fn):
 
 if __name__ == "__main__":
     errors = {}
-    log_file=os.path.join(os.path.dirname(__file__),'./HPatch_result.txt')
     
-    weights=os.path.join(os.path.dirname(__file__),'../trained_weights/default/LiftFeat_81000.pth')
+    weights=os.path.join(os.path.dirname(__file__),'../weights/LiftFeat.pth')
     liftfeat=LiftFeat(weight=weights)
 
     errors = benchmark_features(liftfeat.match_liftfeat)
@@ -175,18 +174,10 @@ if __name__ == "__main__":
     i_err, v_err, i_err_hom, v_err_hom, _ = errors
     
     cur_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    with open(log_file,'a+') as f:
-        f.write(f'\n==={cur_time}==={args.name}===\n')
-        print(f"MHA@1 MHA@2 MHA@3 MHA@4 MHA@5")
-        for thr in range(1, 6):
-            ill_err_hom = i_err_hom[thr] / (n_i * 5)
-            view_err_hom = v_err_hom[thr] / (n_v * 5)
-            print(f"{ill_err_hom * 100:.2f}%-{view_err_hom * 100:.2f}%")
-
-        print(f"MHA@3 MHA@5 MHA@7")
-        f.write("MHA@3 MHA@5 MHA@7\n")
-        for thr in [3, 5, 7]:
-            ill_err_hom = i_err_hom[thr] / (n_i * 5)
-            view_err_hom = v_err_hom[thr] / (n_v * 5)
-            print(f"{ill_err_hom * 100:.2f}%-{view_err_hom * 100:.2f}%")
-            f.write(f'{ill_err_hom * 100:.2f}%-{view_err_hom * 100:.2f}%\n')
+    
+    print(f'\n==={cur_time}==={args.name}===')
+    print(f"MHA@3 MHA@5 MHA@7")
+    for thr in [3, 5, 7]:
+        ill_err_hom = i_err_hom[thr] / (n_i * 5)
+        view_err_hom = v_err_hom[thr] / (n_v * 5)
+        print(f"{ill_err_hom * 100:.2f}%-{view_err_hom * 100:.2f}%")

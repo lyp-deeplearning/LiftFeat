@@ -51,7 +51,7 @@ def estimate_pose(kpts0, kpts1, K0, K1, thresh, conf=0.99999):
 def tensor2bgr(t):
     return (t.cpu()[0].permute(1,2,0).numpy()*255).astype(np.uint8)
 
-def compute_pose_error(match_fn,data,pixel_thrs=[0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0]):
+def compute_pose_error(match_fn,data,pixel_thrs=[4.0]):
     result = {}
     
     with torch.no_grad():

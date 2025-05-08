@@ -1,4 +1,14 @@
 ## LiftFeat: 3D Geometry-Aware Local Feature Matching  
+<div align="center" style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+  <div style="display: flex; justify-content: space-around; width: 100%;">
+    <img src='./assert/demo_sp.gif' width="400"/>
+    <img src='./assert/demo_liftfeat.gif' width="400"/>
+  </div>
+  
+  Real-time SuperPoint demonstration (left) compared to LiftFeat (right) on a textureless scene. 
+  
+</div>
+
 Training code is now available
 
 ## Table of Contents
@@ -12,12 +22,15 @@ Training code is now available
 - [License](#license)
 
 ## Introduction
-This repository contains the official implementation of the paper: *[LiftFeat: 3D Geometry-Aware Local Feature Matching]*, to be presented at ICRA 2025.
+This repository contains the official implementation of the paper:  
+**[LiftFeat: 3D Geometry-Aware Local Feature Matching](https://www.arxiv.org/abs/2505.03422)**, to be presented at *ICRA 2025*.
 
 **Overview of LiftFeat's achitecture**
 <div style="background-color:white">
     <img align="center" src="./assert/achitecture.png" width=1000 />
 </div>
+
+LiftFeat is a lightweight and robust local feature matching network designed to handle challenging scenarios such as drastic lighting changes, low-texture regions, and repetitive patterns. By incorporating 3D geometric cues through surface normals predicted from monocular depth, LiftFeat enhances the discriminative power of 2D descriptors. Our proposed 3D geometry-aware feature lifting module effectively fuses these cues, leading to significant improvements in tasks like relative pose estimation, homography estimation, and visual localization.
 
 ## Installation
 If you use conda as virtual environment,you can create a new env with:
@@ -26,7 +39,6 @@ git clone https://github.com/lyp-deeplearning/LiftFeat.git
 cd LiftFeat
 conda create -n LiftFeat python=3.8
 conda activate LiftFeat
-
 pip install -r requirements.txt
 ```
 
@@ -69,15 +81,6 @@ For *Megadepth1500* dataset:
 python evaluation/megadepth_evaluation.py
 ```
 
-For *ScanNet1500* dataset:
-```bash
-python evaluation/scannet_evaluation.py
-```
-
-**Visual Localization**
-```bash
-python evaluation/aachen_day_night_evaluation.py
-```
 
 ## Citation
 If you find this code useful for your research, please cite the paper:

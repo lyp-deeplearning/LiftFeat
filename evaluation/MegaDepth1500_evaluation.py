@@ -77,7 +77,7 @@ class MegaDepth1500(Dataset):
         return data
 
 if __name__ == "__main__":
-    weights=os.path.join(os.path.dirname(__file__),'../trained_weights/default/LiftFeat_81000.pth')
+    weights=os.path.join(os.path.dirname(__file__),'../weights/LiftFeat.pth')
     liftfeat=LiftFeat(weight=weights)
 
     log_file=os.path.join(os.path.dirname(__file__),'./MegaDepth_result.txt')

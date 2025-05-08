@@ -38,7 +38,7 @@ def warp_corners_and_draw_matches(ref_points, dst_points, img1, img2):
 
 
 if __name__=="__main__":
-    liftfeat=LiftFeat(weight=MODEL_PATH)
+    liftfeat=LiftFeat(weight=MODEL_PATH,detect_threshold=0.05)
     
     img1=cv2.imread(os.path.join(os.path.dirname(__file__),'./assert/ref.jpg'))
     img2=cv2.imread(os.path.join(os.path.dirname(__file__),'./assert/query.jpg'))

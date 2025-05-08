@@ -9,7 +9,7 @@
   
 </div>
 
-Training code is now available
+- 🎉 **New!** Training code is now available 🚀
 
 ## Table of Contents
 - [Introduction](#introduction)

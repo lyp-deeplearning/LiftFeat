@@ -10,6 +10,7 @@
 </div>
 
 - 🎉 **New!** Training code is now available 🚀
+- 🎉 **New!** The test code and pretrained model have been released. 🚀
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -74,10 +75,10 @@ All evaluation code are in *evaluation*, you can download **HPatch** dataset fol
 cd /data
 
 # Download the dataset
-wget http://icvl.ee.ic.ac.uk/vbalnt/hpatches/hpatches-sequences-release.tar.gz
+wget https://huggingface.co/datasets/vbalnt/hpatches/resolve/main/hpatches-sequences-release.zip
 
 # Extract the dataset
-tar xvzf hpatches-sequences-release.tar.gz
+unzip hpatches-sequences-release.zip
 
 # Remove the high-resolution sequences
 cd hpatches-sequences-release
@@ -101,14 +102,14 @@ ln -s <path to megadepth_test_1500> ./megadepth_test_1500
 
 **Homography Estimation**
 ```bash
-python evaluation/hpatch_evaluation.py
+python evaluation/HPatch_evaluation.py
 ```
 
 **Relative Pose Estimation**
 
 For *Megadepth1500* dataset:
 ```bash
-python evaluation/megadepth_evaluation.py
+python evaluation/MegaDepth1500_evaluation.py
 ```
 
 

@@ -15,3 +15,4 @@ tensorboard==2.14.0
 tqdm==4.66.4
 omegaconf==2.3.0
 thop==0.1.1.post2209072238
+poselib

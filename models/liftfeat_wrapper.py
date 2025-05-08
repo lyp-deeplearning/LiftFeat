@@ -52,22 +52,22 @@ def load_model(model, weight_path):
     missing_keys = model_keys - pretrained_keys
     unexpected_keys = pretrained_keys - model_keys
 
-    if missing_keys:
-        print("Missing keys in pretrained weights:", missing_keys)
-    else:
-        print("No missing keys in pretrained weights.")
+    # if missing_keys:
+    #     print("Missing keys in pretrained weights:", missing_keys)
+    # else:
+    #     print("No missing keys in pretrained weights.")
 
-    if unexpected_keys:
-        print("Unexpected keys in pretrained weights:", unexpected_keys)
-    else:
-        print("No unexpected keys in pretrained weights.")
+    # if unexpected_keys:
+    #     print("Unexpected keys in pretrained weights:", unexpected_keys)
+    # else:
+    #     print("No unexpected keys in pretrained weights.")
 
     if not missing_keys and not unexpected_keys:
         model.load_state_dict(pretrained_weights)
-        print("Pretrained weights loaded successfully.")
+        print("load weight successfully.")
     else:
         model.load_state_dict(pretrained_weights, strict=False)
-        print("There were issues with the keys.")
+        # print("There were issues with the keys.")
     return model
 
 

@@ -15,7 +15,6 @@ import scipy.io as scio
 import poselib
 
 import argparse
-import setproctitle
 import datetime
 
 parser=argparse.ArgumentParser(description='MegaDepth dataset evaluation script')
@@ -33,6 +32,9 @@ from torch.utils.data import Dataset,DataLoader
 
 use_cuda = torch.cuda.is_available()
 device = "cuda" if use_cuda else "cpu"
+
+DATASET_ROOT = os.path.join(os.path.dirname(__file__),'../data/megadepth_test_1500')
+DATASET_JSON = os.path.join(os.path.dirname(__file__),'../data/megadepth_1500.json')
 
 class MegaDepth1500(Dataset):
     """
@@ -79,11 +81,8 @@ class MegaDepth1500(Dataset):
 if __name__ == "__main__":
     weights=os.path.join(os.path.dirname(__file__),'../weights/LiftFeat.pth')
     liftfeat=LiftFeat(weight=weights)
-
-    log_file=os.path.join(os.path.dirname(__file__),'./MegaDepth_result.txt')
     
-    dataset = MegaDepth1500( json_file = '/home/yepeng_liu/code_python/laiwenpeng/accelerated_features/assets/megadepth_1500.json',
-                             root_dir =  "/home/yepeng_liu/code_python/third_repos/train_dataset/megadepth_test_1500")
+    dataset = MegaDepth1500(json_file = DATASET_JSON, root_dir = DATASET_ROOT)
 
     loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
@@ -92,26 +91,15 @@ if __name__ == "__main__":
     t_errs = []
     inliers = []
     
-    results={}
+    results=[]
 
     cur_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    
-    pixel_thrs=[0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0]
-    for pixel_thr in pixel_thrs:
-        results[pixel_thr]=[]
 
     for d in tqdm.tqdm(loader, desc="processing"):
-        error_infos = compute_pose_error(liftfeat.match_liftfeat,d,pixel_thrs)
-        for i in range(len(error_infos)):
-            pixel_thr=error_infos[i]['pixel_thr']
-            results[pixel_thr].append(error_infos[i])
+        error_infos = compute_pose_error(liftfeat.match_liftfeat,d)
+        results.append(error_infos)
             
-    
-    with open(log_file,'a+') as f:
-        f.write(f'\n==={cur_time}==={args.name}===\n')
-        for k,v in results.items():    
-            d_err_auc,errors=compute_maa(results[k])
-            thresholds=[5,10,20]
-            f.write(f'pixel_thr: {k}\n')
-            for s_k,s_v in d_err_auc.items():
-                f.write(f'{s_k}: {s_v*100}\n')
+    print(f'\n==={cur_time}==={args.name}===')
+    d_err_auc,errors=compute_maa(results)
+    for s_k,s_v in d_err_auc.items():
+        print(f'{s_k}: {s_v*100}')

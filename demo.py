@@ -9,6 +9,17 @@ os.environ['CUDA_VISIBLE_DEVICES']='1'
 
 from models.liftfeat_wrapper import LiftFeat,MODEL_PATH
 
+import argparse
+
+parser=argparse.ArgumentParser(description='HPatch dataset evaluation script')
+parser.add_argument('--name',type=str,default='LiftFeat',help='experiment name')
+parser.add_argument('--img1',type=str,default='./assert/ref.jpg',help='reference image path')
+parser.add_argument('--img2',type=str,default='./assert/query.jpg',help='query image path')
+parser.add_argument('--gpu',type=str,default='0',help='GPU ID')
+args=parser.parse_args()
+
+os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+
 
 def warp_corners_and_draw_matches(ref_points, dst_points, img1, img2):
     # Calculate the Homography matrix
@@ -40,8 +51,8 @@ def warp_corners_and_draw_matches(ref_points, dst_points, img1, img2):
 if __name__=="__main__":
     liftfeat=LiftFeat(weight=MODEL_PATH,detect_threshold=0.05)
     
-    img1=cv2.imread(os.path.join(os.path.dirname(__file__),'./assert/ref.jpg'))
-    img2=cv2.imread(os.path.join(os.path.dirname(__file__),'./assert/query.jpg'))
+    img1=cv2.imread(args.img1)
+    img2=cv2.imread(args.img2)
     
     # import pdb;pdb.set_trace()
     mkpts1,mkpts2=liftfeat.match_liftfeat(img1,img2)

@@ -46,7 +46,7 @@ pip install -r requirements.txt
 ### Inference
 To run LiftFeat on an image,you can simply run with:
 ```bash
-python demo.py --image_path <path to your image>
+python demo.py --img1=<reference image> --img2=<query image>
 ```
 
 ### Training

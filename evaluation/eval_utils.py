@@ -51,7 +51,7 @@ def estimate_pose(kpts0, kpts1, K0, K1, thresh, conf=0.99999):
 def tensor2bgr(t):
     return (t.cpu()[0].permute(1,2,0).numpy()*255).astype(np.uint8)
 
-def compute_pose_error(match_fn,data,pixel_thrs=[4.0]):
+def compute_pose_error(match_fn,data):
     result = {}
     
     with torch.no_grad():
@@ -64,22 +64,17 @@ def compute_pose_error(match_fn,data,pixel_thrs=[4.0]):
     T_0to1 = data["T_0to1"][0].numpy()
     T_1to0 = data["T_1to0"][0].numpy()
 
-    results=[]
+    result={}
     conf = 0.99999
     
-    # import pdb;pdb.set_trace()
-    for pixel_thr in pixel_thrs:
-        result={}
-        ret = estimate_pose(mkpts0,mkpts1,K0,K1,pixel_thr,conf)
-        if ret is not None:
-            R, t, inliers = ret
-            t_err, R_err = relative_pose_error(T_0to1, R, t, ignore_gt_t_thr=0.0)
-            result['R_err'] = R_err
-            result['t_err'] = t_err
-            result['pixel_thr'] = pixel_thr
-            results.append(result)
+    ret = estimate_pose(mkpts0,mkpts1,K0,K1,4.0,conf)
+    if ret is not None:
+        R, t, inliers = ret
+        t_err, R_err = relative_pose_error(T_0to1, R, t, ignore_gt_t_thr=0.0)
+        result['R_err'] = R_err
+        result['t_err'] = t_err
 
-    return results
+    return result
 
 
 def error_auc(errors, thresholds=[5, 10, 20]):
@@ -102,7 +97,7 @@ def error_auc(errors, thresholds=[5, 10, 20]):
     return {f'auc@{t}': auc for t, auc in zip(thresholds, aucs)}
 
 def compute_maa(pairs, thresholds=[5, 10, 20]):
-    print("auc / mAcc on %d pairs" % (len(pairs)))
+    # print("auc / mAcc on %d pairs" % (len(pairs)))
     errors = []
 
     for p in pairs:
@@ -112,14 +107,14 @@ def compute_maa(pairs, thresholds=[5, 10, 20]):
 
     d_err_auc = error_auc(errors)
 
-    for k,v in d_err_auc.items():
-        print(k, ': ', '%.1f'%(v*100))
+    # for k,v in d_err_auc.items():
+    #     print(k, ': ', '%.1f'%(v*100))
 
     errors = np.array(errors)
 
     for t in thresholds:
         acc = (errors <= t).sum() / len(errors)
-        print("mAcc@%d: %.1f "%(t, acc*100))
+        # print("mAcc@%d: %.1f "%(t, acc*100))
         
     return d_err_auc,errors
         

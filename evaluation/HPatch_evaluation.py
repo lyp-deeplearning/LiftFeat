@@ -9,7 +9,6 @@ import poselib
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 
 import argparse
-import setproctitle
 import datetime
 
 parser=argparse.ArgumentParser(description='HPatch dataset evaluation script')
@@ -26,7 +25,7 @@ top_k = None
 n_i = 52
 n_v = 56
 
-dataset_path = "/home/yepeng_liu/code_python/dataset/hpatches-sequences-release/normal_resolusion"
+DATASET_ROOT = os.path.join(os.path.dirname(__file__),'../data/HPatch')
 
 from evaluation.eval_utils import *
 from models.liftfeat_wrapper import LiftFeat
@@ -87,7 +86,7 @@ def benchmark_features(match_fn):
     lim = [1, 9]
     rng = np.arange(lim[0], lim[1] + 1)
 
-    seq_names = sorted(os.listdir(dataset_path))
+    seq_names = sorted(os.listdir(DATASET_ROOT))
 
     n_feats = []
     n_matches = []
@@ -100,14 +99,14 @@ def benchmark_features(match_fn):
 
     for seq_idx, seq_name in tqdm(enumerate(seq_names), total=len(seq_names)):
         # load reference image
-        ref_img = cv2.imread(os.path.join(dataset_path, seq_name, "1.ppm"))
+        ref_img = cv2.imread(os.path.join(DATASET_ROOT, seq_name, "1.ppm"))
         ref_img_shape=ref_img.shape
 
         # load query images
         for im_idx in range(2, 7):
             # read ground-truth homography
-            homography = np.loadtxt(os.path.join("/home/yepeng_liu/code_python/dataset/hpatches-sequences-release/normal_resolusion",seq_name,"H_1_" + str(im_idx)))
-            query_img = cv2.imread(os.path.join(dataset_path, seq_name, f"{im_idx}.ppm"))
+            homography = np.loadtxt(os.path.join(DATASET_ROOT, seq_name, "H_1_" + str(im_idx)))
+            query_img = cv2.imread(os.path.join(DATASET_ROOT, seq_name, f"{im_idx}.ppm"))
             
             mkpts_a,mkpts_b=match_fn(ref_img,query_img)
 

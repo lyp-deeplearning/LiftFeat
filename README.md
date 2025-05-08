@@ -67,7 +67,37 @@ python train.py --megadepth_root_path <path_to>/MegaDepth --synthetic_root_path 
 ```
 
 ### Evaluation
-All evaluation code are in *evaluation*
+All evaluation code are in *evaluation*, you can download **HPatch** dataset following [D2-Net](https://github.com/mihaidusmanu/d2-net/tree/master) and download **MegaDepth** test dataset following [LoFTR](https://github.com/zju3dv/LoFTR/tree/master).
+
+**Download and process HPatch**
+```bash
+cd /data
+
+# Download the dataset
+wget http://icvl.ee.ic.ac.uk/vbalnt/hpatches/hpatches-sequences-release.tar.gz
+
+# Extract the dataset
+tar xvzf hpatches-sequences-release.tar.gz
+
+# Remove the high-resolution sequences
+cd hpatches-sequences-release
+rm -rf i_contruction i_crownnight i_dc i_pencils i_whitebuilding v_artisans v_astronautis v_talent
+
+cd <LiftFeat>/data
+
+ln -s /data/hpatches-sequences-release ./HPatch
+```
+
+**Download and process MegaDepth1500**  
+We provide download link to [megadepth_test_1500](https://drive.google.com/drive/folders/1nTkK1485FuwqA0DbZrK2Cl0WnXadUZdc)
+```bash
+tar xvf <path to megadepth_test_1500.tar>
+
+cd <LiftFeat>/data
+
+ln -s <path to megadepth_test_1500> ./megadepth_test_1500
+```
+
 
 **Homography Estimation**
 ```bash

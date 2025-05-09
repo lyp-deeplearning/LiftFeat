@@ -44,11 +44,21 @@ pip install -r requirements.txt
 ```
 
 ## Usage
-### Inference
+### Inference with image pair
 To run LiftFeat on an image,you can simply run with:
 ```bash
 python demo.py --img1=<reference image> --img2=<query image>
 ```
+
+### Run with video
+We provide a simple real-time demo that matches a template image to each frame of a video stream using our LiftFeat method.
+
+You can run the demo with the following command:
+```bash
+python tools/demo_match_video.py --img your_template.png --video your.mp4
+```
+
+We also provide a [sample template image and video with lighting variation](https://drive.google.com/drive/folders/1b-t-f2Bt47KU674bPI09bGtJ9BHx05Yu?usp=drive_link) for demonstration purposes.
 
 ### Training
 To train LiftFeat as described in the paper, you will need MegaDepth & COCO_20k subset of COCO2017 dataset as described in the paper *[XFeat: Accelerated Features for Lightweight Image Matching](https://arxiv.org/abs/2404.19174)*
@@ -137,5 +147,6 @@ We would like to thank the authors of the following open-source repositories for
 - [verlab/accelerated_features](https://github.com/verlab/accelerated_features)
 - [zju3dv/LoFTR](https://github.com/zju3dv/LoFTR)
 - [rpautrat/SuperPoint](https://github.com/rpautrat/SuperPoint)
+- [Depth-Anything-V2](https://github.com/DepthAnything/Depth-Anything-V2)
 
 We deeply appreciate the efforts of the research community in releasing high-quality codebases.

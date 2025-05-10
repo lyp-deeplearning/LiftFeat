@@ -60,6 +60,23 @@ python tools/demo_match_video.py --img your_template.png --video your.mp4
 
 We also provide a [sample template image and video with lighting variation](https://drive.google.com/drive/folders/1b-t-f2Bt47KU674bPI09bGtJ9BHx05Yu?usp=drive_link) for demonstration purposes.
 
+### Visual Odometry Demo
+We have added a new application to evaluate LiftFeat on visual odometry (VO) tasks.
+
+We use sequences from the KITTI dataset to demonstrate frame-to-frame motion estimation. Running the script below will generate the estimated camera trajectory and the error curve:
+
+```bash
+python tools/demo_vo.py --path1 /path/to/gray/images --path2 /path/to/color/images --id 03
+```
+
+We also provide a sample [KITTI sequence](https://drive.google.com/drive/folders/1b-t-f2Bt47KU674bPI09bGtJ9BHx05Yu?usp=drive_link) for quick testing.
+
+<div style="display: flex; justify-content: space-around; width: 100%;">
+    <img src='./assert/keypoints_liftfeat.gif' width="600"/>
+    <img src='./assert/trajectory_liftfeat.gif' width="300"/>
+  </div>
+
+
 ## Training
 To train LiftFeat as described in the paper, you will need MegaDepth & COCO_20k subset of COCO2017 dataset as described in the paper *[XFeat: Accelerated Features for Lightweight Image Matching](https://arxiv.org/abs/2404.19174)*
 You can obtain the full COCO2017 train data at https://cocodataset.org/.
@@ -148,5 +165,6 @@ We would like to thank the authors of the following open-source repositories for
 - [zju3dv/LoFTR](https://github.com/zju3dv/LoFTR)
 - [rpautrat/SuperPoint](https://github.com/rpautrat/SuperPoint)
 - [Depth-Anything-V2](https://github.com/DepthAnything/Depth-Anything-V2)
+- [Python-VO](https://github.com/Shiaoming/Python-VO)
 
 We deeply appreciate the efforts of the research community in releasing high-quality codebases.

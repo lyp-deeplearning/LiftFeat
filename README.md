@@ -72,7 +72,7 @@ python tools/demo_vo.py --path1 /path/to/gray/images --path2 /path/to/color/imag
 We also provide a sample [KITTI sequence](https://drive.google.com/drive/folders/1b-t-f2Bt47KU674bPI09bGtJ9BHx05Yu?usp=drive_link) for quick testing.
 
 <div style="display: flex; justify-content: space-around; width: 100%;">
-    <img src='./assert/keypoints_liftfeat.gif' width="600"/>
+    <img src='./assert/keypoints_liftfeat.gif' width="500"/>
     <img src='./assert/trajectory_liftfeat.gif' width="300"/>
   </div>
 

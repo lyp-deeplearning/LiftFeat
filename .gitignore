@@ -5,4 +5,7 @@ data/megadepth_test_1500
 dataset/MegaDepth/
 output
 issues
-third_repos
+third_repos/
+.idea/
+__pycache__/
+*.py[cod]

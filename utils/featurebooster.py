@@ -146,6 +146,22 @@ class AttentionalNN(nn.Module):
             desc = layer(desc)
         return desc
 
+class FeatureProjection(nn.Module):
+    """
+    Project from 64 + 3 dimensional features to 64 dimensional features
+    Used after Attentional Layer
+    """
+    def __init__(self, input_dim: int, output_dim: int, layers: List[int], dropout: bool = False, p: float = 0.1):
+        super().__init__()
+        self.mlp = MLP([input_dim] + layers + [output_dim])
+        self.use_dropout = dropout
+        self.dropout = nn.Dropout(p=p)
+
+    def forward(self, x):
+        if self.use_dropout:
+            return self.dropout(self.mlp(x))
+        return self.mlp(x)
+
 
 class FeatureBooster(nn.Module):
     default_config = {
@@ -175,11 +191,20 @@ class FeatureBooster(nn.Module):
         else:
             self.denc = None
 
+        self.attention_dim = self.config['descriptor_dim']
+        if self.use_normal:
+            self.attention_dim += self.config['normal_dim']
+
         if self.use_cross:
-            self.attn_proj = AttentionalNN(feature_dim=self.config['descriptor_dim'], layer_num=self.config['Attentional_layers'], dropout=dropout)
+            self.attn_proj = AttentionalNN(feature_dim=self.attention_dim, layer_num=self.config['Attentional_layers'], dropout=dropout)
 
         # self.final_proj = nn.Linear(self.config['descriptor_dim'], self.config['output_dim'])
-
+        self.feat_project = FeatureProjection(
+            input_dim=self.attention_dim,
+            output_dim=self.config['descriptor_dim'],
+            layers = self.config['feature_projection'],
+            dropout=dropout
+        )
         self.use_dropout = dropout
         self.dropout = nn.Dropout(p=p)
 
@@ -201,19 +226,10 @@ class FeatureBooster(nn.Module):
         # import pdb;pdb.set_trace()
         ## Self boosting
         # Descriptor MLP encoder
-        if self.denc is not None:
-            desc = self.denc(desc)
-        # Geometric MLP encoder
-        if self.use_kenc:
-            desc = desc + self.kenc(kpts)
-            if self.use_dropout:
-                desc = self.dropout(desc)
 
         # 法向量特征 encoder
         if self.use_normal:
-            desc = desc + self.nenc(normals)
-            if self.use_dropout:
-                desc = self.dropout(desc)
+            desc = torch.cat([desc, normals], dim=-1)
         
         ## Cross boosting
         # Multi-layer Transformer network.
@@ -223,7 +239,7 @@ class FeatureBooster(nn.Module):
 
         ## Post processing
         # Final MLP projection
-        # desc = self.final_proj(desc)
+        desc = self.feat_project(desc)
         if self.last_activation is not None:
             desc = self.last_activation(desc)
         # L2 normalization

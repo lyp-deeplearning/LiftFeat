@@ -14,6 +14,7 @@ import json
 import scipy.io as scio
 import poselib
 
+import json
 import argparse
 import datetime
 
@@ -100,6 +101,12 @@ if __name__ == "__main__":
         results.append(error_infos)
             
     print(f'\n==={cur_time}==={args.name}===')
-    d_err_auc,errors=compute_maa(results)
+    d_err_auc, errors=compute_maa(results)
+
+    CURRENT_DIR = os.getcwd()
+    TARGET_DIR = os.path.join(CURRENT_DIR, 'megaDepth1500_failure_case_analysis')
+    with open(os.path.join(TARGET_DIR, 'errors.json'), 'w') as f:
+        json.dump(errors.tolist(), f)
+
     for s_k,s_v in d_err_auc.items():
         print(f'{s_k}: {s_v*100}')

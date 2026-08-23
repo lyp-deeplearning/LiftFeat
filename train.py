@@ -16,32 +16,33 @@ def parse_arguments():
     # MegaDepth dataset setting
     parser.add_argument('--use_megadepth',action='store_true')
     parser.add_argument('--megadepth_root_path', type=str,
-                        default='/home/yepeng_liu/code_python/dataset/MegaDepth/phoenix/S6/zl548',
+                        default=r'E:\LiftFeat\dataset\MegaDepth\phoenix\S6\zl548',
                         help='Path to the MegaDepth dataset root directory.')
-    parser.add_argument('--megadepth_batch_size', type=int, default=6)
+    parser.add_argument('--megadepth_batch_size', type=int, default=1)
     
     # COCO20k dataset setting
     parser.add_argument('--use_coco',action='store_true')
     parser.add_argument('--coco_root_path', type=str, default='/home/yepeng_liu/code_python/dataset/coco_20k',
                         help='Path to the COCO20k dataset root directory.')
     parser.add_argument('--coco_batch_size',type=int,default=4)
-    
-    parser.add_argument('--ckpt_save_path', type=str, default='/home/yepeng_liu/code_python/LiftFeat/trained_weights/test',
+
+    parser.add_argument('--ckpt_save_path', type=str,
+                        default=r'E:\LiftFeat\trained_weights\megadepth_laptop',
                         help='Path to save the checkpoints.')
-    parser.add_argument('--n_steps', type=int, default=160_000,
-                        help='Number of training steps. Default is 160000.')
-    parser.add_argument('--lr', type=float, default=3e-4,
-                        help='Learning rate. Default is 0.0003.')
-    parser.add_argument('--gamma_steplr', type=float, default=0.5,
-                        help='Gamma value for StepLR scheduler. Default is 0.5.')
+    parser.add_argument('--n_steps', type=int, default=80_000,
+                        help='Number of training steps. Default is 80000.')
+    parser.add_argument('--lr', type=float, default=1e-4,
+                        help='Learning rate. Default is 0.0001.')
+    parser.add_argument('--gamma_steplr', type=float, default=0.7,
+                        help='Gamma value for StepLR scheduler. Default is 0.7.')
     parser.add_argument('--training_res', type=lambda s: tuple(map(int, s.split(','))),
                         default=(800, 608), help='Training resolution as width,height. Default is (800, 608).')
     parser.add_argument('--device_num', type=str, default='0',
                         help='Device number to use for training. Default is "0".')
     parser.add_argument('--dry_run', action='store_true',
                         help='If set, perform a dry run training with a mini-batch for sanity check.')
-    parser.add_argument('--save_ckpt_every', type=int, default=500,
-                        help='Save checkpoints every N steps. Default is 500.')
+    parser.add_argument('--save_ckpt_every', type=int, default=2000,
+                        help='Save checkpoints every N steps. Default is 2000.')
     parser.add_argument('--use_coord_loss',action='store_true',help='Enable coordinate loss')
 
     args = parser.parse_args()
@@ -83,14 +84,20 @@ class Trainer():
                        coco_root_path,use_coco,coco_batch_size,
                        ckpt_save_path, 
                        model_name = 'LiftFeat',
-                       n_steps = 160_000, lr= 3e-4, gamma_steplr=0.5, 
+                       n_steps = 80_000, lr= 1e-4, gamma_steplr=0.7,
                        training_res = (800, 608), device_num="0", dry_run = False,
-                       save_ckpt_every = 500, use_coord_loss = False):
+                       save_ckpt_every = 2000, use_coord_loss = False):
+        coco_batch_size = coco_batch_size if use_coco else 0
         print(f'MegeDepth: {use_megadepth}-{megadepth_batch_size}')
         print(f'COCO20k: {use_coco}-{coco_batch_size}')
         print(f'Coordinate loss: {use_coord_loss}')
+        if not use_megadepth and not use_coco:
+            raise RuntimeError('No training dataset enabled. Pass --use_megadepth and/or --use_coco.')
         self.dev = torch.device ('cuda' if torch.cuda.is_available() else 'cpu')
-        
+        print(f'Training device: {self.dev}')
+        if torch.cuda.is_available():
+            print(f'GPU: {torch.cuda.get_device_name(0)}')
+
         # training model
         self.net = LiftFeatSPModel(featureboost_config, use_kenc=False, use_normal=True, use_cross=True).to(self.dev)
         self.loss_fn=LiftFeatLoss(self.dev,lam_descs=1,lam_kpts=2,lam_heatmap=1)
@@ -136,6 +143,8 @@ class Trainer():
             TRAIN_NPZ_ROOT = f"{TRAIN_BASE_PATH}/scene_info_0.1_0.7"
 
             npz_paths = glob.glob(TRAIN_NPZ_ROOT + '/*.npz')[:]
+            if len(npz_paths) == 0:
+                raise RuntimeError(f'No MegaDepth index files found in {TRAIN_NPZ_ROOT}')
             megadepth_dataset = torch.utils.data.ConcatDataset( [MegaDepthDataset(root_dir = TRAINVAL_DATA_SOURCE,
                             npz_path = path) for path in tqdm.tqdm(npz_paths, desc="[MegaDepth] Loading metadata")] )
 
@@ -190,6 +199,8 @@ class Trainer():
                 positives_coarse += positives_megadepth_coarse
                 
         with torch.no_grad():
+            if len(imgs1_t) == 0 or len(imgs2_t) == 0:
+                raise RuntimeError('No training images were generated. Check that --use_megadepth or --use_coco is enabled.')
             imgs1_t=torch.cat(imgs1_t,dim=0)
             imgs2_t=torch.cat(imgs2_t,dim=0)
             
@@ -312,13 +323,15 @@ class Trainer():
                     torch.save(self.net.state_dict(), self.ckpt_save_path + f'/{self.model_name}_{i+1}.pth')
 
                 pbar.set_description(
-'Loss: {:.4f} \
+'Step: {}/{} \
+Loss: {:.4f} \
 loss_descs: {:.3f} acc_coarse: {:.3f} \
 loss_coordinates: {:.3f} acc_coordinates: {:.3f} \
 loss_fb_descs: {:.3f} acc_fb_coarse: {:.3f} \
 loss_fb_coordinates: {:.3f} acc_fb_coordinates: {:.3f} \
 loss_kpts: {:.3f} acc_kpts: {:.3f} \
 loss_normals: {:.3f}'.format( \
+ i+1, self.steps, \
 loss.item(), \
 loss_descs.item(), acc_coarse, \
 loss_coordinates.item(), acc_coordinates, \
@@ -326,9 +339,16 @@ loss_fb_descs.item(), acc_fb_coarse, \
 loss_fb_coordinates.item(), acc_fb_coordinates, \
 loss_kpts.item(), acc_kpt, \
 loss_normals.item()) )
+                if (i+1) % 10 == 0:
+                    print(
+                        'Step: {}/{} Loss: {:.4f} loss_fb_descs: {:.3f} loss_kpts: {:.3f} loss_normals: {:.3f}'.format(
+                            i+1, self.steps, loss.item(), loss_fb_descs.item(), loss_kpts.item(), loss_normals.item()
+                        )
+                    )
                 pbar.update(1)
 
                 # Log metrics
+                self.writer.add_scalar('Step/current', i+1, i)
                 self.writer.add_scalar('Loss/total', loss.item(), i)
                 self.writer.add_scalar('Accuracy/acc_coarse', acc_coarse, i)
                 self.writer.add_scalar('Accuracy/acc_coordinates', acc_coordinates, i)

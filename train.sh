@@ -1,11 +1,10 @@
-# default training
-nohup python /home/yepeng_liu/code_python/LiftFeat/train.py \
---name LiftFeat_test \
---ckpt_save_path /home/yepeng_liu/code_python/LiftFeat/trained_weights/test \
---device_num 1 \
+# MegaDepth-only laptop profile
+python train.py \
+--name LiftFeat_MD_laptop \
 --use_megadepth \
---megadepth_batch_size 8 \
---use_coco \
---coco_batch_size 4 \
---save_ckpt_every 1000 \
-> /home/yepeng_liu/code_python/LiftFeat/trained_weights/test/training.log 2>&1 &
+--megadepth_batch_size 1 \
+--n_steps 80000 \
+--lr 1e-4 \
+--gamma_steplr 0.7 \
+--device_num 0 \
+--save_ckpt_every 2000

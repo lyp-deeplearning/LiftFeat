@@ -70,6 +70,7 @@ from utils.config import featureboost_config
 from models.interpolator import InterpolateSparse2d
 from utils.depth_anything_wrapper import DepthAnythingExtractor
 from utils.alike_wrapper import ALikeExtractor
+from utils.apply_pretrained_weight import apply_weight
 
 from dataset import megadepth_wrapper
 from dataset import coco_wrapper
@@ -161,7 +162,12 @@ class Trainer():
         self.writer = SummaryWriter(ckpt_save_path + f'/logdir/{model_name}_' + time.strftime("%Y_%m_%d-%H_%M_%S"))
         self.model_name = model_name
         self.use_coord_loss = use_coord_loss
-        
+
+        ##################### INHERIT PRETRAINED WEIGHT ###################
+        print("Loading pretrained model...")
+        self.net, _ = apply_weight(self.net, "weights/LiftFeat.pth")
+        print("Pretrained model loaded.")
+        ###################################################################
         
     def generate_train_data(self):
         imgs1_t,imgs2_t=[],[]

@@ -148,7 +148,7 @@ class AttentionalNN(nn.Module):
 
 class FeatureProjection(nn.Module):
     """
-    Project from 64 + 3 dimensional features to 64 dimensional features
+    Project from 64 + 3 * 64 dimensional features to 64 dimensional features
     Used after Attentional Layer
     """
     def __init__(self, input_dim: int, output_dim: int, layers: List[int], dropout: bool = False, p: float = 0.1):
